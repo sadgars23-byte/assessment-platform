@@ -93,7 +93,7 @@ async def analyze_assessment(file: UploadFile = File(...)):
         """
         
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.6-flash',
             contents=[
                 types.Part.from_bytes(data=content, mime_type=mime_type),
                 prompt
@@ -138,7 +138,7 @@ async def generate_answers(
             answers: List[GeneratedAnswer]
 
         response = client.models.generate_content(
-            model='gemini-2.5-pro',
+            model='gemini-3.6-pro',
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
