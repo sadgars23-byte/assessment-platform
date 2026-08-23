@@ -1,16 +1,20 @@
 import axios from 'axios';
 
-let rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+let rawUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').trim();
+
+// Strip trailing slashes
 rawUrl = rawUrl.replace(/\/+$/, '');
-if (!rawUrl.endsWith('/api')) {
-  rawUrl = `${rawUrl}/api`;
+
+// If the user provided /api at the end of VITE_API_URL, strip it to prevent path conflicts
+if (rawUrl.endsWith('/api')) {
+  rawUrl = rawUrl.slice(0, -4);
 }
 
-const API_URL = rawUrl;
+const BASE_URL = rawUrl;
 
 const apiClient = axios.create({
-  baseURL: API_URL,
-  timeout: 60000, // 60s timeout for cold starts on Render free tier
+  baseURL: BASE_URL,
+  timeout: 120000, // 120s timeout for cold starts and heavy PDF processing
 });
 
 export const analyzeAssessment = async (
@@ -23,7 +27,7 @@ export const analyzeAssessment = async (
   formData.append('registration_number', registrationNumber);
   formData.append('assessment_pdf', file);
 
-  const response = await apiClient.post('/assessment/analyze', formData, {
+  const response = await apiClient.post('/api/assessment/analyze', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -32,20 +36,20 @@ export const analyzeAssessment = async (
 };
 
 export const getStatus = async (assessmentId: string) => {
-  const response = await apiClient.get(`/assessment/${assessmentId}/status`);
+  const response = await apiClient.get(`/api/assessment/${assessmentId}/status`);
   return response.data;
 };
 
 export const generateAnswers = async (assessmentId: string) => {
-  const response = await apiClient.post(`/assessment/${assessmentId}/generate`);
+  const response = await apiClient.post(`/api/assessment/${assessmentId}/generate`);
   return response.data;
 };
 
 export const getPreview = async (assessmentId: string) => {
-  const response = await apiClient.get(`/assessment/${assessmentId}/preview`);
+  const response = await apiClient.get(`/api/assessment/${assessmentId}/preview`);
   return response.data;
 };
 
 export const getDownloadUrl = (assessmentId: string) => {
-  return `${API_URL}/assessment/${assessmentId}/download`;
+  return `${BASE_URL}/api/assessment/${assessmentId}/download`;
 };
