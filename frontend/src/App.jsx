@@ -14,6 +14,8 @@ import mermaid from 'mermaid';
 
 mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
 
+const API_BASE_URL = "https://assessment-platform-ypu0.onrender.com";
+
 function MermaidViewer({ chart, id }) {
   const containerRef = useRef(null);
 
@@ -52,7 +54,7 @@ export default function App() {
     formData.append('file', file);
 
     try {
-      const res = await fetch('http://localhost:8000/api/analyze-assessment', {
+      const res = await fetch(`${API_BASE_URL}/api/analyze-assessment`, {
         method: 'POST',
         body: formData,
       });
@@ -74,7 +76,7 @@ export default function App() {
     formData.append('assessment_schema_json', JSON.stringify(assessment));
 
     try {
-      const res = await fetch('http://localhost:8000/api/generate-answers', {
+      const res = await fetch(`${API_BASE_URL}/api/generate-answers`, {
         method: 'POST',
         body: formData,
       });
@@ -91,7 +93,7 @@ export default function App() {
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/download-pdf', {
+      const res = await fetch(`${API_BASE_URL}/api/download-pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(results),
